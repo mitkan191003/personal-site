@@ -6,7 +6,7 @@ export default function Home() {
       <NetworkBackground />
       <main className="relative z-10 flex min-h-screen flex-col">
         <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center gap-10 px-6 py-16 sm:py-24 lg:flex-row lg:items-center lg:justify-between">
-          <section className="max-w-xl">
+          <section className="glass-card max-w-xl rounded-3xl p-8 sm:p-10">
             <h1 className="mt-4 font-display text-4xl font-semibold leading-tight sm:text-5xl">
               Mithra Kancheti
             </h1>

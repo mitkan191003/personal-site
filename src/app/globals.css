@@ -7,6 +7,10 @@
   --color-secondary: #ff6b35;
   --color-text: #f5f2ee;
   --color-muted: #8b8f97;
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --glass-blur: 3px;
+  --glass-brightness: 1.1;
 }
 
 @theme inline {
@@ -23,4 +27,10 @@ body {
 
 .font-display {
   font-family: var(--font-display), sans-serif;
+}
+
+.glass-card {
+  border: 1px solid var(--glass-border);
+  /* box-shadow: var(--glass-shadow); */
+  backdrop-filter: blur(var(--glass-blur)) brightness(var(--glass-brightness));
 }
