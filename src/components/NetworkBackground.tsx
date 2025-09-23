@@ -28,9 +28,9 @@ const defaultSettings: NetworkSettings = {
   dotRadius: 1.4,
   dotOpacity: 0.5,
   lineOpacity: 0.5,
-  baseSpeed: 0.4,
-  drift: 0.01,
-  maxSpeed: 0.7,
+  baseSpeed: 24,
+  drift: 1.2,
+  maxSpeed: 42,
   density: 18000,
   minNodes: 45,
   maxNodes: 200,
@@ -63,6 +63,7 @@ export default function NetworkBackground({
     let height = 0;
     let nodes: Node[] = [];
     let animationFrame = 0;
+    let lastTime = 0;
 
     const createNodes = () => {
       const area = width * height;
@@ -91,7 +92,10 @@ export default function NetworkBackground({
       createNodes();
     };
 
-    const draw = () => {
+    const draw = (time: number) => {
+      if (!lastTime) lastTime = time;
+      const delta = Math.min((time - lastTime) / 1000, 0.05);
+      lastTime = time;
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = `rgba(255, 255, 255, ${merged.dotOpacity})`;
 
@@ -118,11 +122,11 @@ export default function NetworkBackground({
       }
 
       for (const node of nodes) {
-        node.x += node.vx;
-        node.y += node.vy;
+        node.x += node.vx * delta;
+        node.y += node.vy * delta;
 
-        node.vx += (Math.random() - 0.5) * merged.drift;
-        node.vy += (Math.random() - 0.5) * merged.drift;
+        node.vx += (Math.random() - 0.5) * merged.drift * delta;
+        node.vy += (Math.random() - 0.5) * merged.drift * delta;
         node.vx = clamp(node.vx, -merged.maxSpeed, merged.maxSpeed);
         node.vy = clamp(node.vy, -merged.maxSpeed, merged.maxSpeed);
 
