@@ -34,3 +34,16 @@ body {
   /* box-shadow: var(--glass-shadow); */
   backdrop-filter: blur(var(--glass-blur)) brightness(var(--glass-brightness));
 }
+
+.social-button {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 11, 13, 0.8);
+  color: var(--color-text);
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.social-button:hover {
+  border-color: var(--color-secondary);
+  background: rgba(10, 11, 13, 0.95);
+  color: var(--color-secondary);
+}

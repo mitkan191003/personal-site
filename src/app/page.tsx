@@ -27,7 +27,7 @@ export default function Home() {
                 <a
                   href="https://github.com/mitkan191003"
                   aria-label="GitHub"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-[var(--color-text)] transition-colors hover:border-[var(--color-secondary)] hover:text-[var(--color-secondary)]"
+                  className="social-button inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors"
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -40,7 +40,7 @@ export default function Home() {
                 <a
                   href="https://www.linkedin.com/in/mithra-kancheti-0793b7203/"
                   aria-label="LinkedIn"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-[var(--color-text)] transition-colors hover:border-[var(--color-secondary)] hover:text-[var(--color-secondary)]"
+                  className="social-button inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors"
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -53,7 +53,7 @@ export default function Home() {
                 <a
                   href="mailto:mithrak8022@gmail.com"
                   aria-label="Email"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-[var(--color-text)] transition-colors hover:border-[var(--color-secondary)] hover:text-[var(--color-secondary)]"
+                  className="social-button inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors"
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -66,7 +66,7 @@ export default function Home() {
                 <a
                   href="/Mithra_Kancheti_Resume.pdf"
                   aria-label="Resume"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-[var(--color-text)] transition-colors hover:border-[var(--color-secondary)] hover:text-[var(--color-secondary)]"
+                  className="social-button inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors"
                   target="_blank"
                   rel="noreferrer"
                 >
