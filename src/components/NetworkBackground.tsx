@@ -31,7 +31,7 @@ const defaultSettings: NetworkSettings = {
   baseSpeed: 24,
   drift: 1.2,
   maxSpeed: 42,
-  density: 18000,
+  density: 12000,
   minNodes: 45,
   maxNodes: 200,
   edgePadding: 20,
