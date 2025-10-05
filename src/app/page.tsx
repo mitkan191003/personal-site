@@ -28,6 +28,8 @@ export default function Home() {
                   href="https://github.com/mitkan191003"
                   aria-label="GitHub"
                   className="social-button inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors"
+                  target="_blank"
+                  rel="noreferrer"
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -41,6 +43,8 @@ export default function Home() {
                   href="https://www.linkedin.com/in/mithra-kancheti-0793b7203/"
                   aria-label="LinkedIn"
                   className="social-button inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors"
+                  target="_blank"
+                  rel="noreferrer"
                 >
                   <svg
                     viewBox="0 0 24 24"
