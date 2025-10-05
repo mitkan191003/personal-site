@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${displayFont.variable} ${bodyFont.variable} antialiased`}>
         <div className="relative min-h-screen">
-          <header className="sticky top-0 z-20 border-b border-white/5 bg-[rgba(15,16,18,0.8)] backdrop-blur">
+          <header className="glass-card glass-card--header fixed inset-x-0 top-0 z-20">
             <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4 text-sm uppercase tracking-[0.2em] text-[var(--color-muted)]">
               <span className="font-display text-[var(--color-text)]">Mithrak</span>
               <div className="flex items-center gap-8">

@@ -35,6 +35,11 @@ body {
   backdrop-filter: blur(var(--glass-blur)) brightness(var(--glass-brightness));
 }
 
+.glass-card--header {
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 .social-button {
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(10, 11, 13, 0.8);
