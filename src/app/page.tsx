@@ -1,9 +1,19 @@
+"use client";
+
+import { useState } from "react";
+
 import NetworkBackground from "@/components/NetworkBackground";
 
 export default function Home() {
+  const [densityScale, setDensityScale] = useState(1);
+  const [showFps, setShowFps] = useState(false);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[var(--color-background)] text-[var(--color-text)]">
-      <NetworkBackground />
+      <NetworkBackground
+        settings={{ density: Math.round(12000 / densityScale) }}
+        showFps={showFps}
+      />
       <main className="relative z-10 flex min-h-screen flex-col">
         <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center gap-10 px-6 py-16 sm:py-24 lg:flex-row lg:items-center lg:justify-between">
           <section className="glass-card max-w-xl rounded-3xl p-8 sm:p-10">
@@ -87,6 +97,31 @@ export default function Home() {
           </section>
         </div>
       </main>
+      <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 w-[min(90vw,420px)] -translate-x-1/2">
+        <div className="glass-card flex flex-col gap-4 rounded-2xl px-5 py-4 pointer-events-auto">
+          <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
+            Density
+            <input
+              type="range"
+              min={0.5}
+              max={2}
+              step={0.1}
+              value={densityScale}
+              onChange={(event) => setDensityScale(Number(event.target.value))}
+              className="h-2 w-full cursor-pointer accent-[var(--color-secondary)]"
+            />
+          </label>
+          <label className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
+            <input
+              type="checkbox"
+              checked={showFps}
+              onChange={(event) => setShowFps(event.target.checked)}
+              className="h-4 w-4 cursor-pointer accent-[var(--color-secondary)]"
+            />
+            FPS Counter
+          </label>
+        </div>
+      </div>
     </div>
   );
 }

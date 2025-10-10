@@ -43,11 +43,13 @@ const clamp = (value: number, min: number, max: number) =>
 type NetworkBackgroundProps = {
   settings?: Partial<NetworkSettings>;
   className?: string;
+  showFps?: boolean;
 };
 
 export default function NetworkBackground({
   settings,
   className,
+  showFps = false,
 }: NetworkBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const merged = { ...defaultSettings, ...settings };
@@ -64,6 +66,9 @@ export default function NetworkBackground({
     let nodes: Node[] = [];
     let animationFrame = 0;
     let lastTime = 0;
+    let lastFpsTime = 0;
+    let frames = 0;
+    let fps = 0;
 
     const createNodes = () => {
       const area = width * height;
@@ -96,6 +101,14 @@ export default function NetworkBackground({
       if (!lastTime) lastTime = time;
       const delta = Math.min((time - lastTime) / 1000, 0.05);
       lastTime = time;
+      frames += 1;
+      if (!lastFpsTime) lastFpsTime = time;
+      const fpsWindow = time - lastFpsTime;
+      if (fpsWindow >= 500) {
+        fps = (frames * 1000) / fpsWindow;
+        frames = 0;
+        lastFpsTime = time;
+      }
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = `rgba(255, 255, 255, ${merged.dotOpacity})`;
 
@@ -136,6 +149,12 @@ export default function NetworkBackground({
         if (node.y > height + merged.edgePadding) node.y = -merged.edgePadding;
       }
 
+      if (showFps) {
+        ctx.fillStyle = "rgba(245, 242, 238, 0.85)";
+        ctx.font = "12px var(--font-body), sans-serif";
+        ctx.fillText(`FPS: ${Math.round(fps)}`, 16, height - 16);
+      }
+
       animationFrame = window.requestAnimationFrame(draw);
     };
 
@@ -147,7 +166,20 @@ export default function NetworkBackground({
       window.removeEventListener("resize", resize);
       window.cancelAnimationFrame(animationFrame);
     };
-  }, [merged.baseSpeed, merged.density, merged.dotOpacity, merged.dotRadius, merged.drift, merged.edgePadding, merged.lineOpacity, merged.maxDistance, merged.maxNodes, merged.maxSpeed, merged.minNodes]);
+  }, [
+    merged.baseSpeed,
+    merged.density,
+    merged.dotOpacity,
+    merged.dotRadius,
+    merged.drift,
+    merged.edgePadding,
+    merged.lineOpacity,
+    merged.maxDistance,
+    merged.maxNodes,
+    merged.maxSpeed,
+    merged.minNodes,
+    showFps,
+  ]);
 
   return (
     <canvas
