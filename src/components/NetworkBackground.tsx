@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Node = {
   x: number;
@@ -40,17 +40,47 @@ const defaultSettings: NetworkSettings = {
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
-type NetworkBackgroundProps = {
+const clamp01 = (value: number) => clamp(value, 0, 1);
+
+const interpolateSettings = (
+  baseSettings: NetworkSettings,
+  minSettings: Partial<NetworkSettings> | undefined,
+  maxSettings: Partial<NetworkSettings> | undefined,
+  position: number
+) => {
+  const t = clamp01(position);
+  const result = { ...baseSettings };
+  const keys = new Set<string>([
+    ...Object.keys(minSettings ?? {}),
+    ...Object.keys(maxSettings ?? {}),
+  ]);
+  for (const key of keys) {
+    if (!(key in baseSettings)) continue;
+    const typedKey = key as keyof NetworkSettings;
+    const minValue = minSettings?.[typedKey];
+    const maxValue = maxSettings?.[typedKey];
+    const from = typeof minValue === "number" ? minValue : baseSettings[typedKey];
+    const to = typeof maxValue === "number" ? maxValue : baseSettings[typedKey];
+    result[typedKey] = from + (to - from) * t;
+  }
+  return result;
+};
+
+type NetworkBackgroundCanvasProps = {
   settings?: Partial<NetworkSettings>;
   className?: string;
   showFps?: boolean;
+  onFpsUpdate?: (fps: number) => void;
+  staticBackground?: boolean;
 };
 
-export default function NetworkBackground({
+function NetworkBackgroundCanvas({
   settings,
   className,
   showFps = false,
-}: NetworkBackgroundProps) {
+  onFpsUpdate,
+  staticBackground = false,
+}: NetworkBackgroundCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const merged = { ...defaultSettings, ...settings };
 
@@ -69,6 +99,7 @@ export default function NetworkBackground({
     let lastFpsTime = 0;
     let frames = 0;
     let fps = 0;
+    const shouldAnimate = !staticBackground || showFps;
 
     const createNodes = () => {
       const area = width * height;
@@ -95,20 +126,28 @@ export default function NetworkBackground({
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       createNodes();
+      if (!shouldAnimate) {
+        draw(performance.now());
+      }
     };
 
     const draw = (time: number) => {
       if (!lastTime) lastTime = time;
       const delta = Math.min((time - lastTime) / 1000, 0.05);
       lastTime = time;
-      frames += 1;
-      if (!lastFpsTime) lastFpsTime = time;
-      const fpsWindow = time - lastFpsTime;
-      if (fpsWindow >= 500) {
-        fps = (frames * 1000) / fpsWindow;
-        frames = 0;
-        lastFpsTime = time;
+
+      if (showFps) {
+        frames += 1;
+        if (!lastFpsTime) lastFpsTime = time;
+        const fpsWindow = time - lastFpsTime;
+        if (fpsWindow >= 500) {
+          fps = (frames * 1000) / fpsWindow;
+          frames = 0;
+          lastFpsTime = time;
+          onFpsUpdate?.(fps);
+        }
       }
+
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = `rgba(255, 255, 255, ${merged.dotOpacity})`;
 
@@ -134,37 +173,41 @@ export default function NetworkBackground({
         }
       }
 
-      for (const node of nodes) {
-        node.x += node.vx * delta;
-        node.y += node.vy * delta;
+      if (!staticBackground) {
+        for (const node of nodes) {
+          node.x += node.vx * delta;
+          node.y += node.vy * delta;
 
-        node.vx += (Math.random() - 0.5) * merged.drift * delta;
-        node.vy += (Math.random() - 0.5) * merged.drift * delta;
-        node.vx = clamp(node.vx, -merged.maxSpeed, merged.maxSpeed);
-        node.vy = clamp(node.vy, -merged.maxSpeed, merged.maxSpeed);
+          node.vx += (Math.random() - 0.5) * merged.drift * delta;
+          node.vy += (Math.random() - 0.5) * merged.drift * delta;
+          node.vx = clamp(node.vx, -merged.maxSpeed, merged.maxSpeed);
+          node.vy = clamp(node.vy, -merged.maxSpeed, merged.maxSpeed);
 
-        if (node.x < -merged.edgePadding) node.x = width + merged.edgePadding;
-        if (node.x > width + merged.edgePadding) node.x = -merged.edgePadding;
-        if (node.y < -merged.edgePadding) node.y = height + merged.edgePadding;
-        if (node.y > height + merged.edgePadding) node.y = -merged.edgePadding;
+          if (node.x < -merged.edgePadding) node.x = width + merged.edgePadding;
+          if (node.x > width + merged.edgePadding) node.x = -merged.edgePadding;
+          if (node.y < -merged.edgePadding) node.y = height + merged.edgePadding;
+          if (node.y > height + merged.edgePadding) node.y = -merged.edgePadding;
+        }
       }
 
-      if (showFps) {
-        ctx.fillStyle = "rgba(245, 242, 238, 0.85)";
-        ctx.font = "12px var(--font-body), sans-serif";
-        ctx.fillText(`FPS: ${Math.round(fps)}`, 16, height - 16);
+      if (shouldAnimate) {
+        animationFrame = window.requestAnimationFrame(draw);
       }
-
-      animationFrame = window.requestAnimationFrame(draw);
     };
 
     resize();
     window.addEventListener("resize", resize);
-    animationFrame = window.requestAnimationFrame(draw);
+    if (shouldAnimate) {
+      animationFrame = window.requestAnimationFrame(draw);
+    } else {
+      draw(performance.now());
+    }
 
     return () => {
       window.removeEventListener("resize", resize);
-      window.cancelAnimationFrame(animationFrame);
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
+      }
     };
   }, [
     merged.baseSpeed,
@@ -179,6 +222,8 @@ export default function NetworkBackground({
     merged.maxSpeed,
     merged.minNodes,
     showFps,
+    onFpsUpdate,
+    staticBackground,
   ]);
 
   return (
@@ -187,5 +232,160 @@ export default function NetworkBackground({
       className={`pointer-events-none absolute inset-0 z-0 opacity-70 ${className ?? ""}`}
       aria-hidden="true"
     />
+  );
+}
+
+type NetworkBackgroundProps = {
+  className?: string;
+  minNetworkSettings?: Partial<NetworkSettings>;
+  maxNetworkSettings?: Partial<NetworkSettings>;
+  defaultSliderPosition?: number;
+};
+
+const STORAGE_KEY = "network-background-options";
+
+export default function NetworkBackground({
+  className,
+  minNetworkSettings,
+  maxNetworkSettings,
+  defaultSliderPosition = 0.5,
+}: NetworkBackgroundProps) {
+  const clampedDefaultPosition = clamp01(defaultSliderPosition);
+  const [sliderPosition, setSliderPosition] = useState(clampedDefaultPosition);
+  const [showFps, setShowFps] = useState(false);
+  const [staticBackground, setStaticBackground] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const [fps, setFps] = useState(0);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (!stored) {
+      setHasLoaded(true);
+      return;
+    }
+    try {
+      const parsed = JSON.parse(stored) as {
+        sliderPosition?: number;
+        showFps?: boolean;
+        staticBackground?: boolean;
+      };
+      if (typeof parsed.sliderPosition === "number") {
+        setSliderPosition(clamp01(parsed.sliderPosition));
+      } else {
+        setSliderPosition(clampedDefaultPosition);
+      }
+      if (typeof parsed.showFps === "boolean") {
+        setShowFps(parsed.showFps);
+      }
+      if (typeof parsed.staticBackground === "boolean") {
+        setStaticBackground(parsed.staticBackground);
+      }
+    } catch {
+      setSliderPosition(clampedDefaultPosition);
+    } finally {
+      setHasLoaded(true);
+    }
+  }, [clampedDefaultPosition]);
+
+  useEffect(() => {
+    if (!hasLoaded || typeof window === "undefined") return;
+    const payload = {
+      sliderPosition,
+      showFps,
+      staticBackground,
+    };
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  }, [sliderPosition, showFps, staticBackground, hasLoaded]);
+
+  const interpolatedSettings = useMemo(
+    () =>
+      interpolateSettings(
+        defaultSettings,
+        minNetworkSettings,
+        maxNetworkSettings,
+        sliderPosition
+      ),
+    [minNetworkSettings, maxNetworkSettings, sliderPosition]
+  );
+
+  return (
+    <>
+      <NetworkBackgroundCanvas
+        settings={interpolatedSettings}
+        showFps={showFps}
+        onFpsUpdate={setFps}
+        staticBackground={staticBackground}
+        className={className}
+      />
+      <div className="fixed bottom-6 right-6 z-20">
+        <div className="relative flex flex-col items-end gap-3">
+          {optionsOpen ? (
+            <div
+              id="background-options"
+              className="glass-card w-[min(86vw,320px)] rounded-2xl px-5 py-4"
+            >
+              <div className="mb-4 flex items-center justify-between text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                <span>Background Options</span>
+                <button
+                  type="button"
+                  onClick={() => setOptionsOpen(false)}
+                  className="text-[var(--color-muted)] transition-colors hover:text-[var(--color-secondary)]"
+                >
+                  Close
+                </button>
+              </div>
+              <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                Intensity
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={sliderPosition}
+                  onChange={(event) =>
+                    setSliderPosition(Number(event.target.value))
+                  }
+                  className="h-2 w-full cursor-pointer accent-[var(--color-secondary)]"
+                />
+              </label>
+              <label className="mt-4 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                <input
+                  type="checkbox"
+                  checked={staticBackground}
+                  onChange={(event) => setStaticBackground(event.target.checked)}
+                  className="h-4 w-4 cursor-pointer accent-[var(--color-secondary)]"
+                />
+                Static Background
+              </label>
+              <label className="mt-3 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                <input
+                  type="checkbox"
+                  checked={showFps}
+                  onChange={(event) => setShowFps(event.target.checked)}
+                  className="h-4 w-4 cursor-pointer accent-[var(--color-secondary)]"
+                />
+                FPS Counter
+              </label>
+              {showFps ? (
+                <div className="mt-3 text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                  FPS: {Math.round(fps)}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setOptionsOpen((open) => !open)}
+            aria-expanded={optionsOpen}
+            aria-controls="background-options"
+            className="glass-card rounded-full px-4 py-2 text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] transition-colors hover:text-[var(--color-secondary)]"
+          >
+            Background Options
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
