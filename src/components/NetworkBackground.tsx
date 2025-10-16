@@ -99,7 +99,7 @@ function NetworkBackgroundCanvas({
     let lastFpsTime = 0;
     let frames = 0;
     let fps = 0;
-    const shouldAnimate = !staticBackground || showFps;
+    const shouldAnimate = !staticBackground;
 
     const createNodes = () => {
       const area = width * height;
@@ -116,38 +116,7 @@ function NetworkBackgroundCanvas({
       }));
     };
 
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      createNodes();
-      if (!shouldAnimate) {
-        draw(performance.now());
-      }
-    };
-
-    const draw = (time: number) => {
-      if (!lastTime) lastTime = time;
-      const delta = Math.min((time - lastTime) / 1000, 0.05);
-      lastTime = time;
-
-      if (showFps) {
-        frames += 1;
-        if (!lastFpsTime) lastFpsTime = time;
-        const fpsWindow = time - lastFpsTime;
-        if (fpsWindow >= 500) {
-          fps = (frames * 1000) / fpsWindow;
-          frames = 0;
-          lastFpsTime = time;
-          onFpsUpdate?.(fps);
-        }
-      }
-
+    const renderScene = () => {
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = `rgba(255, 255, 255, ${merged.dotOpacity})`;
 
@@ -172,6 +141,45 @@ function NetworkBackgroundCanvas({
           ctx.stroke();
         }
       }
+    };
+
+    const updateFps = (time: number) => {
+      frames += 1;
+      if (!lastFpsTime) lastFpsTime = time;
+      const fpsWindow = time - lastFpsTime;
+      if (fpsWindow >= 500) {
+        fps = (frames * 1000) / fpsWindow;
+        frames = 0;
+        lastFpsTime = time;
+        onFpsUpdate?.(fps);
+      }
+    };
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      createNodes();
+      if (staticBackground) {
+        renderScene();
+      }
+    };
+
+    const draw = (time: number) => {
+      if (!lastTime) lastTime = time;
+      const delta = Math.min((time - lastTime) / 1000, 0.05);
+      lastTime = time;
+
+      if (showFps) {
+        updateFps(time);
+      }
+
+      renderScene();
 
       if (!staticBackground) {
         for (const node of nodes) {
@@ -190,9 +198,7 @@ function NetworkBackgroundCanvas({
         }
       }
 
-      if (shouldAnimate) {
-        animationFrame = window.requestAnimationFrame(draw);
-      }
+      animationFrame = window.requestAnimationFrame(draw);
     };
 
     resize();
@@ -200,7 +206,13 @@ function NetworkBackgroundCanvas({
     if (shouldAnimate) {
       animationFrame = window.requestAnimationFrame(draw);
     } else {
-      draw(performance.now());
+      renderScene();
+      if (showFps) {
+        animationFrame = window.requestAnimationFrame(function tick(time) {
+          updateFps(time);
+          animationFrame = window.requestAnimationFrame(tick);
+        });
+      }
     }
 
     return () => {
