@@ -5,8 +5,8 @@ export default function Home() {
     <div className="relative min-h-screen overflow-hidden bg-[var(--color-background)] text-[var(--color-text)]">
       <NetworkBackground
         minNetworkSettings={{ density: 18000, maxNodes: 200, maxDistance: 200 }}
-        maxNetworkSettings={{ density: 1000, maxNodes: 2000, maxDistance: 100 }}
-        defaultSliderPosition={0.67}
+        maxNetworkSettings={{ density: 1000, maxNodes: 2000, maxDistance: 120 }}
+        defaultSliderPosition={0.1}
       />
       <main className="relative z-10 flex min-h-screen flex-col">
         <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center gap-10 px-6 py-16 sm:py-24 lg:flex-row lg:items-center lg:justify-between">

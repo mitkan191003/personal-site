@@ -42,6 +42,18 @@ const clamp = (value: number, min: number, max: number) =>
 
 const clamp01 = (value: number) => clamp(value, 0, 1);
 
+const exponentialKeys: Array<keyof NetworkSettings> = [
+  "density",
+  "minNodes",
+  "maxNodes",
+];
+
+const interpolateLinear = (from: number, to: number, t: number) =>
+  from + (to - from) * t;
+
+const interpolateExponential = (from: number, to: number, t: number) =>
+  from > 0 && to > 0 ? from * Math.pow(to / from, t) : interpolateLinear(from, to, t);
+
 const interpolateSettings = (
   baseSettings: NetworkSettings,
   minSettings: Partial<NetworkSettings> | undefined,
@@ -61,7 +73,11 @@ const interpolateSettings = (
     const maxValue = maxSettings?.[typedKey];
     const from = typeof minValue === "number" ? minValue : baseSettings[typedKey];
     const to = typeof maxValue === "number" ? maxValue : baseSettings[typedKey];
-    result[typedKey] = from + (to - from) * t;
+    if (exponentialKeys.includes(typedKey)) {
+      result[typedKey] = interpolateExponential(from, to, t);
+    } else {
+      result[typedKey] = interpolateLinear(from, to, t);
+    }
   }
   return result;
 };
