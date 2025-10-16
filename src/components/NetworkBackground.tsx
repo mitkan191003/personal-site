@@ -136,25 +136,55 @@ function NetworkBackgroundCanvas({
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = `rgba(255, 255, 255, ${merged.dotOpacity})`;
 
-      for (let i = 0; i < nodes.length; i += 1) {
-        const node = nodes[i];
+      for (const node of nodes) {
         ctx.beginPath();
         ctx.arc(node.x, node.y, merged.dotRadius, 0, Math.PI * 2);
         ctx.fill();
+      }
 
-        for (let j = i + 1; j < nodes.length; j += 1) {
-          const other = nodes[j];
-          const dx = node.x - other.x;
-          const dy = node.y - other.y;
-          const dist = Math.hypot(dx, dy);
-          if (dist > merged.maxDistance) continue;
-          const alpha = 1 - dist / merged.maxDistance;
-          ctx.strokeStyle = `rgba(255, 107, 53, ${alpha * merged.lineOpacity})`;
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(node.x, node.y);
-          ctx.lineTo(other.x, other.y);
-          ctx.stroke();
+      const gridCols = 4;
+      const gridRows = 4;
+      const cellWidth = Math.max(width / gridCols, 1);
+      const cellHeight = Math.max(height / gridRows, 1);
+      const grid: number[][] = Array.from(
+        { length: gridCols * gridRows },
+        () => []
+      );
+
+      for (let i = 0; i < nodes.length; i += 1) {
+        const node = nodes[i];
+        const cx = clamp(Math.floor(node.x / cellWidth), 0, gridCols - 1);
+        const cy = clamp(Math.floor(node.y / cellHeight), 0, gridRows - 1);
+        grid[cy * gridCols + cx].push(i);
+      }
+
+      for (let i = 0; i < nodes.length; i += 1) {
+        const node = nodes[i];
+        const cx = clamp(Math.floor(node.x / cellWidth), 0, gridCols - 1);
+        const cy = clamp(Math.floor(node.y / cellHeight), 0, gridRows - 1);
+
+        for (let dy = -1; dy <= 1; dy += 1) {
+          for (let dx = -1; dx <= 1; dx += 1) {
+            const nx = cx + dx;
+            const ny = cy + dy;
+            if (nx < 0 || nx >= gridCols || ny < 0 || ny >= gridRows) continue;
+            const cell = grid[ny * gridCols + nx];
+            for (const otherIndex of cell) {
+              if (otherIndex <= i) continue;
+              const other = nodes[otherIndex];
+              const dx = node.x - other.x;
+              const dy = node.y - other.y;
+              const dist = Math.hypot(dx, dy);
+              if (dist > merged.maxDistance) continue;
+              const alpha = 1 - dist / merged.maxDistance;
+              ctx.strokeStyle = `rgba(255, 107, 53, ${alpha * merged.lineOpacity})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(node.x, node.y);
+              ctx.lineTo(other.x, other.y);
+              ctx.stroke();
+            }
+          }
         }
       }
     };
