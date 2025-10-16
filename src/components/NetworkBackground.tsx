@@ -142,8 +142,8 @@ function NetworkBackgroundCanvas({
         ctx.fill();
       }
 
-      const gridCols = 4;
-      const gridRows = 4;
+      const gridCols = Math.max(1, Math.floor(width / (merged.maxDistance + 1)));
+      const gridRows = Math.max(1, Math.floor(height / (merged.maxDistance + 1)));
       const cellWidth = Math.max(width / gridCols, 1);
       const cellHeight = Math.max(height / gridRows, 1);
       const grid: number[][] = Array.from(
