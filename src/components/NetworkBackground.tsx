@@ -385,7 +385,17 @@ export default function NetworkBackground({
               className="glass-card w-[min(86vw,320px)] rounded-2xl px-5 py-4"
             >
               <div className="mb-4 flex items-center justify-between text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]">
-                <span>Background Options</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSliderPosition(clampedDefaultPosition);
+                    setShowFps(false);
+                    setStaticBackground(false);
+                  }}
+                  className="text-[var(--color-muted)] transition-colors hover:text-[var(--color-secondary)]"
+                >
+                  Reset
+                </button>
                 <button
                   type="button"
                   onClick={() => setOptionsOpen(false)}
