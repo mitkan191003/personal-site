@@ -392,14 +392,14 @@ export default function NetworkBackground({
                     setShowFps(false);
                     setStaticBackground(false);
                   }}
-                  className="text-[var(--color-muted)] transition-colors hover:text-[var(--color-secondary)]"
+                  className="social-button inline-flex h-8 items-center justify-center rounded-full px-3 text-[10px] uppercase tracking-[0.2em]"
                 >
                   Reset
                 </button>
                 <button
                   type="button"
                   onClick={() => setOptionsOpen(false)}
-                  className="text-[var(--color-muted)] transition-colors hover:text-[var(--color-secondary)]"
+                  className="social-button inline-flex h-8 items-center justify-center rounded-full px-3 text-[10px] uppercase tracking-[0.2em]"
                 >
                   Close
                 </button>
