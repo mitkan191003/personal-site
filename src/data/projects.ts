@@ -1,4 +1,11 @@
-const projects = [
+export type Project = {
+  title: string;
+  description: string;
+  tags: string[];
+  href: string;
+};
+
+const projects: Project[] = [
   {
     title: "ParksTracker",
     description:
@@ -19,6 +26,6 @@ const projects = [
     tags: ["Observability", "TypeScript", "React"],
     href: "https://shipmasday1-2025.vercel.app/",
   },
-] as const;
+];
 
 export default projects;

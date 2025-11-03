@@ -1,12 +1,5 @@
 import NetworkBackground from "@/components/NetworkBackground";
-import projects from "@/data/projects";
-
-type Project = {
-  title: string;
-  description: string;
-  tags: string[];
-  href: string;
-};
+import projects, { type Project } from "@/data/projects";
 
 const GRID_LAYOUTS = [
   { cols: 2, rows: 2, capacity: 4 },
@@ -49,7 +42,7 @@ const ArrowIcon = () => (
 );
 
 export default function ProjectsPage() {
-  const projectList = projects as Project[];
+  const projectList: Project[] = projects;
   const totalCards = projectList.length + 1;
   const layout = pickLayout(totalCards);
   const gridKey = `${layout.cols}x${layout.rows}`;
