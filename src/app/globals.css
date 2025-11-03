@@ -11,12 +11,44 @@
   --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   --glass-blur: 3px;
   --glass-brightness: 1.1;
+  /* Type scale tokens: tweak these defaults, then use text-h1/text-body in markup. */
+  --fs-h1: 2.5rem;
+  --fs-h2: 1.75rem;
+  --fs-body: 1rem;
+  --fs-muted: 0.75rem;
 }
 
 @theme inline {
   --color-background: var(--color-background);
   --color-foreground: var(--color-text);
   --font-sans: var(--font-body);
+  /* Expose font size tokens as Tailwind utilities: text-h1, text-body, etc. */
+  --text-h1: var(--fs-h1);
+  --text-h2: var(--fs-h2);
+  --text-body: var(--fs-body);
+  --text-muted: var(--fs-muted);
+  /* Override common Tailwind sizes to use the same scale without changing markup. */
+  --text-4xl: var(--fs-h1);
+  --text-lg: var(--fs-body);
+}
+
+/* Larger screens: bump the scale by adjusting these variables. */
+@media (min-width: 1280px) {
+  :root {
+    --fs-h1: 3rem;
+    --fs-h2: 2rem;
+    --fs-body: 1.2rem;
+    --fs-muted: 1rem;
+  }
+}
+
+@media (min-width: 2000px) {
+  :root {
+    --fs-h1: 3.5rem;
+    --fs-h2: 2.5rem;
+    --fs-body: 1.5rem;
+    --fs-muted: 1rem;
+  }
 }
 
 body {
