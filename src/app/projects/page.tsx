@@ -108,13 +108,13 @@ export default function ProjectsPage() {
                 <ArrowIcon />
               </span>
               <div>
-                <h2 className="text-lg font-semibold">See more</h2>
-                <p className="mt-3 text-sm text-[var(--color-muted)]">
+                <h2 className="text-h2 font-semibold">See more</h2>
+                <p className="mt-3 text-body text-[var(--color-muted)]">
                   Browse my work on GitHub.
                 </p>
               </div>
               <div className="mt-5">
-                <span className="social-button inline-flex items-center rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em]">
+                <span className="social-button inline-flex items-center rounded-full px-3 py-1 text-muted uppercase tracking-[0.2em]">
                   GitHub
                 </span>
               </div>
