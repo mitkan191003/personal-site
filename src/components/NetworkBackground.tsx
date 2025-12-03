@@ -203,8 +203,16 @@ function NetworkBackgroundCanvas({
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
+      const parent = canvas.parentElement ?? document.body;
+      const rect = parent.getBoundingClientRect();
+      const doc = document.documentElement;
+      const docHeight = Math.max(
+        doc.scrollHeight,
+        document.body.scrollHeight,
+        window.innerHeight
+      );
+      width = Math.max(rect.width, window.innerWidth);
+      height = Math.max(parent.scrollHeight, docHeight);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       canvas.style.width = `${width}px`;
@@ -249,6 +257,17 @@ function NetworkBackgroundCanvas({
 
     resize();
     window.addEventListener("resize", resize);
+    const resizeObserver =
+      "ResizeObserver" in window
+        ? new ResizeObserver(() => {
+            resize();
+          })
+        : null;
+    if (resizeObserver) {
+      resizeObserver.observe(canvas.parentElement ?? document.body);
+      resizeObserver.observe(document.documentElement);
+      resizeObserver.observe(document.body);
+    }
     if (shouldAnimate) {
       animationFrame = window.requestAnimationFrame(draw);
     } else {
@@ -263,6 +282,9 @@ function NetworkBackgroundCanvas({
 
     return () => {
       window.removeEventListener("resize", resize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       if (animationFrame) {
         window.cancelAnimationFrame(animationFrame);
       }
