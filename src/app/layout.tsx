@@ -16,8 +16,8 @@ const bodyFont = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Mithrak",
-  description: "Personal site for Mithrak.",
+  title: "Mithra Kancheti",
+  description: "Mithra Kancheti",
   icons: {
     icon: "/icon.svg",
   },
