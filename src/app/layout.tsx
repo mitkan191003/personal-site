@@ -18,6 +18,9 @@ const bodyFont = Manrope({
 export const metadata: Metadata = {
   title: "Mithrak",
   description: "Personal site for Mithrak.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
