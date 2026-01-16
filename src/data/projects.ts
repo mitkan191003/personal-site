@@ -23,7 +23,7 @@ const projects: Project[] = [
     title: "Gift Maker",
     description:
       "A Secret Santa gift exchange generator. User made prompts are used to generate 3D gifts, which are then shipped to a random recipient. Uses Modal to run custom ML inference in a scalable manner.",
-    tags: ["Observability", "TypeScript", "React"],
+    tags: ["Supabase", "Modal", "Diffusion Model"],
     href: "https://shipmasday1-2025.vercel.app/",
   },
 ];
