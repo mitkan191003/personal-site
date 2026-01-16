@@ -1,4 +1,5 @@
 import NetworkBackground from "@/components/NetworkBackground";
+import { networkBackgroundOptions } from "@/config/networkBackground";
 import projects, { type Project } from "@/data/projects";
 
 const GRID_LAYOUTS = [
@@ -53,11 +54,7 @@ export default function ProjectsPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[var(--color-background)] text-[var(--color-text)]">
-      <NetworkBackground
-        minNetworkSettings={{ density: 14000, maxNodes: 100, maxDistance: 160 }}
-        maxNetworkSettings={{ density: 1000, maxNodes: 2000, maxDistance: 80 }}
-        defaultSliderPosition={0.05}
-      />
+      <NetworkBackground {...networkBackgroundOptions} />
       <main className="relative z-10 flex min-h-screen flex-col px-6 py-16 sm:py-24">
         <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
           <header>

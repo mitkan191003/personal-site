@@ -1,13 +1,10 @@
 import NetworkBackground from "@/components/NetworkBackground";
+import { networkBackgroundOptions } from "@/config/networkBackground";
 
 export default function Home() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[var(--color-background)] text-[var(--color-text)]">
-      <NetworkBackground
-        minNetworkSettings={{ density: 14000, maxNodes: 100, maxDistance: 160 }}
-        maxNetworkSettings={{ density: 1000, maxNodes: 2000, maxDistance: 80 }}
-        defaultSliderPosition={0.05}
-      />
+      <NetworkBackground {...networkBackgroundOptions} />
       <main className="relative z-10 flex min-h-screen flex-col">
         <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center gap-10 px-6 py-16 sm:py-24 lg:flex-row lg:items-center lg:justify-between">
           <section className="glass-card max-w-xl rounded-3xl p-8 sm:p-10">
