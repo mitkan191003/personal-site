@@ -107,6 +107,11 @@ function NetworkBackgroundCanvas({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const lineColor =
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--color-secondary")
+        .trim() || "#ffffff";
+
     let width = 0;
     let height = 0;
     let nodes: Node[] = [];
@@ -134,6 +139,7 @@ function NetworkBackgroundCanvas({
 
     const renderScene = () => {
       ctx.clearRect(0, 0, width, height);
+      ctx.globalAlpha = 1;
       ctx.fillStyle = `rgba(255, 255, 255, ${merged.dotOpacity})`;
 
       for (const node of nodes) {
@@ -158,6 +164,7 @@ function NetworkBackgroundCanvas({
         grid[cy * gridCols + cx].push(i);
       }
 
+      ctx.strokeStyle = lineColor;
       for (let i = 0; i < nodes.length; i += 1) {
         const node = nodes[i];
         const cx = clamp(Math.floor(node.x / cellWidth), 0, gridCols - 1);
@@ -177,7 +184,7 @@ function NetworkBackgroundCanvas({
               const dist = Math.hypot(dx, dy);
               if (dist > merged.maxDistance) continue;
               const alpha = 1 - dist / merged.maxDistance;
-              ctx.strokeStyle = `rgba(255, 107, 53, ${alpha * merged.lineOpacity})`;
+              ctx.globalAlpha = alpha * merged.lineOpacity;
               ctx.lineWidth = 1;
               ctx.beginPath();
               ctx.moveTo(node.x, node.y);
@@ -187,6 +194,7 @@ function NetworkBackgroundCanvas({
           }
         }
       }
+      ctx.globalAlpha = 1;
     };
 
     const updateFps = (time: number) => {
