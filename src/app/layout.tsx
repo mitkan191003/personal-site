@@ -34,7 +34,7 @@ export default function RootLayout({
         <div className="relative min-h-screen">
           <header className="glass-card glass-card--header fixed inset-x-0 top-0 z-20">
             <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4 text-sm uppercase tracking-[0.2em] text-[var(--color-muted)]">
-              <span className="font-display text-[var(--color-text)]">Mithrak</span>
+              <span className="font-display text-[var(--color-text)]">Mithra Kancheti</span>
               <div className="flex items-center gap-8">
                 <Link
                   href="/"
