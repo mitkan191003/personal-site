@@ -1,9 +1,9 @@
+import MultiUrlProjectCard from "@/components/MultiUrlProjectCard";
 import NetworkBackground from "@/components/NetworkBackground";
 import { networkBackgroundOptions } from "@/config/networkBackground";
 import projects, {
   isMultiUrl,
   type Project,
-  type MultiUrlProject,
   type SingleProject,
 } from "@/data/projects";
 
@@ -83,41 +83,6 @@ function SingleProjectCard({ project }: { project: SingleProject }) {
         <Tags tags={project.tags} />
       </div>
     </a>
-  );
-}
-
-function MultiUrlProjectCard({ project }: { project: MultiUrlProject }) {
-  return (
-    <div className="group glass-card relative flex flex-col justify-between rounded-3xl p-6 transition-colors hover:border-white/30">
-      {/* Default: title + description + tags */}
-      <div className="flex h-full flex-col justify-between transition-opacity duration-300 group-hover:opacity-0">
-        <div>
-          <h2 className="text-h2 font-semibold">{project.title}</h2>
-          <p className="mt-3 text-body text-[var(--color-muted)]">
-            {project.description}
-          </p>
-        </div>
-        <div className="mt-5">
-          <Tags tags={project.tags} />
-        </div>
-      </div>
-
-      {/* Hover: link buttons centered in the full card */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto">
-        {project.links.map((link) => (
-          <a
-            key={link.label}
-            href={link.href}
-            target="_blank"
-            rel="noreferrer"
-            className="social-button inline-flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-body transition-colors hover:border-[var(--color-secondary)] hover:text-[var(--color-secondary)]"
-          >
-            <span>{link.label}</span>
-            <ArrowIcon />
-          </a>
-        ))}
-      </div>
-    </div>
   );
 }
 
