@@ -1,11 +1,41 @@
-export type Project = {
+export type ProjectLink = {
+  label: string;
+  href: string;
+};
+
+export type SingleProject = {
   title: string;
   description: string;
   tags: string[];
   href: string;
 };
 
+export type MultiUrlProject = {
+  title: string;
+  description: string;
+  tags: string[];
+  links: ProjectLink[];
+};
+
+export type Project = SingleProject | MultiUrlProject;
+
+export function isMultiUrl(project: Project): project is MultiUrlProject {
+  return "links" in project;
+}
+
 const projects: Project[] = [
+  {
+    title: "GiftGen",
+    description:
+      "User made prompts are used to generate 3D gifts, which are then shared with other users. Uses AWS and Modal to run the backend and custom ML inference in a scalable manner.",
+    tags: ["AWS", "Terraform", "Kubernetes"],
+    links: [
+      { label: "Live Site", href: "https://giftgen.mithrak.com/" },
+      { label: "Frontend Source", href: "https://github.com/mitkan191003/giftgen-frontend" },
+      { label: "Backend Source", href: "https://github.com/mitkan191003/giftgen-backend" },
+      { label: "Infra Source", href: "https://github.com/mitkan191003/giftgen-infra" },
+    ],
+  },
   {
     title: "ParksTracker",
     description:
@@ -15,29 +45,11 @@ const projects: Project[] = [
   },
   {
     title: "Fast Fashion",
-    description: "A scrolling story about the fast fashion industry and its impact on the environment. Utilized a three.js canvas to create an immersive experience with 3D models and animations. Optimized assets in Blender for performance and bandwidth.",
+    description:
+      "A scrolling story about the fast fashion industry and its impact on the environment. Utilized a three.js canvas to create an immersive experience with 3D models and animations. Optimized assets in Blender for performance and bandwidth.",
     tags: ["Three.js", "React", "Asset Optimization"],
     href: "https://fastfashion.mithrak.com/",
   },
-  {
-    title: "Gift Maker",
-    description:
-      "A Secret Santa gift exchange generator. User made prompts are used to generate 3D gifts, which are then shipped to a random recipient. Uses Modal to run custom ML inference in a scalable manner.",
-    tags: ["Supabase", "Modal", "Diffusion Model"],
-    href: "https://shipmasday1-2025.vercel.app/",
-  },
-  // {
-  //   title: "Placeholder 1",
-  //   description: "Placeholder 1",
-  //   tags: ["Placeholder 1"],
-  //   href: "https://placeholder.mithrak.com/",
-  // },
-  // {
-  //   title: "Placeholder 2",
-  //   description: "Placeholder 2",
-  //   tags: ["Placeholder 2"],
-  //   href: "https://placeholder.mithrak.com/",
-  // },
 ];
 
 export default projects;

@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --color-background: #0f1012;
+  --color-background: #050404;
   --color-surface: #1a1c20;
   --color-primary: #1e1f22;
   --color-secondary: #ff6b35;
   --color-text: #f5f2ee;
-  --color-muted: #8b8f97;
+  --color-muted: #abb0b9;
   --glass-border: rgba(255, 255, 255, 0.2);
   --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   --glass-blur: 3px;

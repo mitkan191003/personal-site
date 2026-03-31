@@ -1,6 +1,11 @@
 import NetworkBackground from "@/components/NetworkBackground";
 import { networkBackgroundOptions } from "@/config/networkBackground";
-import projects, { type Project } from "@/data/projects";
+import projects, {
+  isMultiUrl,
+  type Project,
+  type MultiUrlProject,
+  type SingleProject,
+} from "@/data/projects";
 
 const GRID_LAYOUTS = [
   { cols: 2, rows: 2, capacity: 4 },
@@ -42,6 +47,80 @@ const ArrowIcon = () => (
   </svg>
 );
 
+function Tags({ tags }: { tags: string[] }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {tags.map((tag) => (
+        <span
+          key={tag}
+          className="social-button inline-flex items-center rounded-full px-3 py-1 text-muted uppercase tracking-[0.2em]"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function SingleProjectCard({ project }: { project: SingleProject }) {
+  return (
+    <a
+      href={project.href}
+      target="_blank"
+      rel="noreferrer"
+      className="group glass-card relative flex flex-col justify-between rounded-3xl p-6 transition-colors hover:border-white/30"
+    >
+      <span className="absolute right-5 top-5 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-[var(--color-muted)] transition-colors group-hover:border-[var(--color-secondary)] group-hover:text-[var(--color-secondary)]">
+        <ArrowIcon />
+      </span>
+      <div>
+        <h2 className="text-h2 font-semibold">{project.title}</h2>
+        <p className="mt-3 text-body text-[var(--color-muted)]">
+          {project.description}
+        </p>
+      </div>
+      <div className="mt-5">
+        <Tags tags={project.tags} />
+      </div>
+    </a>
+  );
+}
+
+function MultiUrlProjectCard({ project }: { project: MultiUrlProject }) {
+  return (
+    <div className="group glass-card relative flex flex-col justify-between rounded-3xl p-6 transition-colors hover:border-white/30">
+      {/* Default: title + description + tags */}
+      <div className="flex h-full flex-col justify-between transition-opacity duration-300 group-hover:opacity-0">
+        <div>
+          <h2 className="text-h2 font-semibold">{project.title}</h2>
+          <p className="mt-3 text-body text-[var(--color-muted)]">
+            {project.description}
+          </p>
+        </div>
+        <div className="mt-5">
+          <Tags tags={project.tags} />
+        </div>
+      </div>
+
+      {/* Hover: link buttons centered in the full card */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto">
+        {project.links.map((link) => (
+          <a
+            key={link.label}
+            href={link.href}
+            target="_blank"
+            rel="noreferrer"
+            className="social-button inline-flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-body transition-colors hover:border-[var(--color-secondary)] hover:text-[var(--color-secondary)]"
+          >
+            <span>{link.label}</span>
+            <ArrowIcon />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ProjectsPage() {
   const projectList: Project[] = projects;
   const totalCards = projectList.length + 1;
@@ -63,37 +142,22 @@ export default function ProjectsPage() {
             </h1>
           </header>
           <div className={`grid flex-1 gap-6 ${gridClass}`}>
-            {visibleProjects.map((project) => (
-              <a
-                key={project.title}
-                href={project.href}
-                target="_blank"
-                rel="noreferrer"
-                className="group glass-card relative flex flex-col justify-between rounded-3xl p-6 transition-colors hover:border-white/30"
-              >
-                <span className="absolute right-5 top-5 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-[var(--color-muted)] transition-colors group-hover:border-[var(--color-secondary)] group-hover:text-[var(--color-secondary)]">
-                  <ArrowIcon />
-                </span>
-                <div>
-                  <h2 className="text-h2 font-semibold">{project.title}</h2>
-                  <p className="mt-3 text-body text-[var(--color-muted)]">
-                    {project.description}
-                  </p>
-                </div>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="social-button inline-flex items-center rounded-full px-3 py-1 text-muted uppercase tracking-[0.2em]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </a>
-            ))}
+            {visibleProjects.map((project) =>
+              isMultiUrl(project) ? (
+                <MultiUrlProjectCard
+                  key={project.title}
+                  project={project}
+                />
+              ) : (
+                <SingleProjectCard key={project.title} project={project} />
+              ),
+            )}
             {Array.from({ length: fillerCount }).map((_, index) => (
-              <div key={`filler-${index}`} className="invisible" aria-hidden="true" />
+              <div
+                key={`filler-${index}`}
+                className="invisible"
+                aria-hidden="true"
+              />
             ))}
             <a
               href={GITHUB_URL}
